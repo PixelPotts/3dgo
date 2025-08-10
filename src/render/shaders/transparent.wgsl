@@ -68,6 +68,6 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     
     let final_color = (ambient + diffuse + specular) * in.color;
     
-    // 10% opacity for guide planes
-    return vec4<f32>(final_color, 0.1);
+    // 30% opacity for better visibility of guide planes
+    return vec4<f32>(final_color, 0.3);
 }
