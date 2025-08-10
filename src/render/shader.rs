@@ -56,7 +56,7 @@ impl Shader {
                 bias: wgpu::DepthBiasState::default(),
             }),
             multisample: wgpu::MultisampleState {
-                count: 4,  // 4x MSAA antialiasing
+                count: 1,  // 4x MSAA antialiasing
                 mask: !0,
                 alpha_to_coverage_enabled: false,
             },
@@ -130,7 +130,7 @@ impl Shader {
                 bias: wgpu::DepthBiasState::default(),
             }),
             multisample: wgpu::MultisampleState {
-                count: 4,
+                count: 1,
                 mask: !0,
                 alpha_to_coverage_enabled: true,
             },
