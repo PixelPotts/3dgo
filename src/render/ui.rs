@@ -1,13 +1,7 @@
 use super::{Camera, Graphics, Instance};
 use crate::game::{GameRules, StoneColor};
 use glam::{Vec3, Mat4};
-cfg_if::cfg_if! {
-    if #[cfg(target_arch = "wasm32")] {
-        use web_time::Instant;
-    } else {
-        use std::time::Instant;
-    }
-}
+use instant::Instant;
 
 #[derive(Debug, Clone, Copy)]
 pub enum ViewDirection {

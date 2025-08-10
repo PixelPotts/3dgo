@@ -11,13 +11,7 @@ use winit::{
     event_loop::{ControlFlow, EventLoop},
     window::{Window, WindowBuilder},
 };
-cfg_if::cfg_if! {
-    if #[cfg(target_arch = "wasm32")] {
-        use web_time::Instant;
-    } else {
-        use std::time::Instant;
-    }
-}
+use instant::Instant;
 
 struct GameState {
     rules: GameRules,
