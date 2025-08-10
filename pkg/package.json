@@ -1,0 +1,15 @@
+{
+  "name": "go3d",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "go3d_bg.wasm",
+    "go3d.js",
+    "go3d.d.ts"
+  ],
+  "main": "go3d.js",
+  "types": "go3d.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
