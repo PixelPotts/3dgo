@@ -328,7 +328,7 @@ async fn run() {
                 camera_controller.update_camera(&mut camera, dt);
                 graphics.update_camera(&camera);
 
-                match graphics.render(&[], &game_state.black_stone_instances, &game_state.white_stone_instances, &game_state.rules, &camera) {
+                match graphics.render(&[], &game_state.black_stone_instances, &game_state.white_stone_instances, &game_state.rules, &camera, None) {
                     Ok(_) => {}
                     Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
                         graphics.resize(graphics.size);
