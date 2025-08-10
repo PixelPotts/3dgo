@@ -1,6 +1,7 @@
 use glam::Vec3;
 use super::Instance;
 
+#[derive(Clone)]
 pub struct GuideSystem {
     pub plane_x_pos: i32,  // Position along X axis (for YZ plane)
     pub plane_y_pos: i32,  // Position along Y axis (for XZ plane)  
@@ -68,9 +69,12 @@ impl GuideSystem {
     pub fn get_dot_instance(&self) -> Instance {
         let half_size = self.board_size as f32 * 0.5;
         
+        // Position at intersection with highest z (which is the max z position in the board)
+        let highest_z = self.board_size as f32 - half_size + 0.5;
+        
         let mut dot = Instance::new(Vec3::new(
             self.plane_x_pos as f32 - half_size + 0.5,
-            self.plane_z_pos as f32 - half_size + 0.5,  // Swapped for rendering
+            highest_z,  // Always at highest Z position
             self.plane_y_pos as f32 - half_size + 0.5,  // Swapped for rendering
         ));
         dot.scale = Vec3::splat(0.125);  // 1/8th the size of a stone

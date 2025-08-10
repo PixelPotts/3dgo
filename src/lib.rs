@@ -3,7 +3,7 @@ pub mod render;
 pub mod input;
 
 use game::{GameRules, StoneColor};
-use render::{Graphics, Camera, CameraController, Instance};
+use render::{Graphics, Camera, CameraController, Instance, GuideSystem};
 use input::MousePicker;
 use glam::Vec3;
 #[cfg(target_arch = "wasm32")]
@@ -28,6 +28,8 @@ struct GameState {
     selected_position: Option<(u8, u8, u8)>,
     mouse_position: glam::Vec2,
     animation_paused: bool,
+    guide_system: GuideSystem,
+    pending_ai_move: bool,
 }
 
 impl GameState {
@@ -35,6 +37,7 @@ impl GameState {
         let rules = GameRules::new_with_dodecahedron(3);
         let black_stone_instances = Vec::new();
         let white_stone_instances = Vec::new();
+        let guide_system = GuideSystem::new(3);
 
         Self {
             rules,
@@ -43,6 +46,8 @@ impl GameState {
             selected_position: None,
             mouse_position: glam::Vec2::ZERO,
             animation_paused: false,
+            guide_system,
+            pending_ai_move: false,
         }
     }
 
@@ -91,6 +96,42 @@ impl GameState {
             }
         }
 
+        false
+    }
+
+    fn place_stone_at_guide(&mut self) -> bool {
+        let (x, y, z) = self.guide_system.get_intersection_position();
+        if self.rules.make_move(x, y, z) {
+            self.update_stones();
+            return true;
+        }
+        false
+    }
+
+    fn make_ai_move(&mut self) -> bool {
+        // Simple AI: find all empty positions and choose randomly
+        use rand::Rng;
+        let mut rng = rand::thread_rng();
+        let board_size = self.rules.board().size();
+        let mut empty_positions = Vec::new();
+
+        for x in 0..board_size {
+            for y in 0..board_size {
+                for z in 0..board_size {
+                    if self.rules.board().get_stone((x as u8, y as u8, z as u8)).is_none() {
+                        empty_positions.push((x as u8, y as u8, z as u8));
+                    }
+                }
+            }
+        }
+
+        if !empty_positions.is_empty() {
+            let random_pos = empty_positions[rng.gen_range(0..empty_positions.len())];
+            if self.rules.make_move(random_pos.0, random_pos.1, random_pos.2) {
+                self.update_stones();
+                return true;
+            }
+        }
         false
     }
 }
@@ -177,15 +218,30 @@ pub async fn run() {
                             // Handle special game commands only on key press
                             if input.state == ElementState::Pressed {
                                 match key {
+                                    // Guide plane controls
+                                    VirtualKeyCode::W => {
+                                        game_state.guide_system.move_y(1);  // Y plane forward
+                                    }
+                                    VirtualKeyCode::S => {
+                                        game_state.guide_system.move_y(-1); // Y plane backward  
+                                    }
+                                    VirtualKeyCode::A => {
+                                        game_state.guide_system.move_x(-1); // X plane left
+                                    }
+                                    VirtualKeyCode::D => {
+                                        game_state.guide_system.move_x(1);  // X plane right
+                                    }
+                                    VirtualKeyCode::Space => {
+                                        // Place stone at guide intersection
+                                        if game_state.place_stone_at_guide() {
+                                            game_state.pending_ai_move = true;
+                                        }
+                                    }
                                     VirtualKeyCode::R => {
                                         // Reset - clear the board
                                         game_state.rules.clear_board();
                                         game_state.update_stones();
-                                    }
-                                    VirtualKeyCode::D => {
-                                        // Dodecahedron - reset with dodecahedron
-                                        game_state.rules.reset_with_dodecahedron();
-                                        game_state.update_stones();
+                                        game_state.pending_ai_move = false;
                                     }
                                     // Zoom controls
                                     VirtualKeyCode::Q | VirtualKeyCode::Left => {
@@ -263,8 +319,12 @@ pub async fn run() {
                             MouseScrollDelta::LineDelta(_, y) => *y,
                             MouseScrollDelta::PixelDelta(pos) => pos.y as f32 * 0.01,
                         };
-                        // Mouse wheel no longer controls zoom - only guide planes would use this
-                        // But lib.rs doesn't have guide system, so this does nothing now
+                        // Mouse wheel controls Z plane movement
+                        if scroll_amount > 0.0 {
+                            game_state.guide_system.move_z(1);
+                        } else if scroll_amount < 0.0 {
+                            game_state.guide_system.move_z(-1);
+                        }
                     }
 
                     _ => {}
@@ -285,10 +345,19 @@ pub async fn run() {
                 let dt = now.duration_since(last_frame_time).as_secs_f32();
                 last_frame_time = now;
 
+                // Handle pending AI move
+                if game_state.pending_ai_move {
+                    game_state.make_ai_move();
+                    game_state.pending_ai_move = false;
+                }
+
                 camera_controller.update_camera(&mut camera, dt);
                 graphics.update_camera(&camera);
 
-                match graphics.render(&[], &game_state.black_stone_instances, &game_state.white_stone_instances, &game_state.rules, &camera) {
+                // Create guide plane instances
+                let guide_instances = vec![game_state.guide_system.get_dot_instance()];
+
+                match graphics.render(&guide_instances, &game_state.black_stone_instances, &game_state.white_stone_instances, &game_state.rules, &camera, Some(&game_state.guide_system)) {
                     Ok(_) => {}
                     Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
                         graphics.resize(graphics.size);

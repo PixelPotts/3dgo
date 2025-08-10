@@ -247,13 +247,13 @@ impl Graphics {
         let transparent_box_mesh = Self::create_mesh_buffers(&device, &transparent_box_data);
 
         // Create guide plane meshes (very faint yellow)
-        let guide_plane_xy_data = Mesh::create_guide_plane_xy(1.0, [0.8, 0.8, 0.3]);
+        let guide_plane_xy_data = Mesh::create_guide_plane_xy(1.0, [1.0, 1.0, 1.0]);
         let guide_plane_xy_mesh = Self::create_mesh_buffers(&device, &guide_plane_xy_data);
         
-        let guide_plane_xz_data = Mesh::create_guide_plane_xz(1.0, [0.8, 0.8, 0.3]);
+        let guide_plane_xz_data = Mesh::create_guide_plane_xz(1.0, [1.0, 1.0, 1.0]);
         let guide_plane_xz_mesh = Self::create_mesh_buffers(&device, &guide_plane_xz_data);
         
-        let guide_plane_yz_data = Mesh::create_guide_plane_yz(1.0, [0.8, 0.8, 0.3]);
+        let guide_plane_yz_data = Mesh::create_guide_plane_yz(1.0, [1.0, 1.0, 1.0]);
         let guide_plane_yz_mesh = Self::create_mesh_buffers(&device, &guide_plane_yz_data);
         
         // Create guide dot mesh (blue, 1/8 size)
@@ -391,7 +391,11 @@ impl Graphics {
         self.queue.write_buffer(&self.camera_buffer, 0, bytemuck::cast_slice(&[camera_uniform]));
     }
 
-    pub fn render(&mut self, instances: &[Instance], black_stones: &[Instance], white_stones: &[Instance], game_rules: &GameRules, camera: &super::Camera) -> Result<(), wgpu::SurfaceError> {
+    pub fn render(&mut self, instances: &[Instance], black_stones: &[Instance], white_stones: &[Instance], game_rules: &GameRules, camera: &super::Camera, guide_system: Option<&super::GuideSystem>) -> Result<(), wgpu::SurfaceError> {
+        // Update guide system if provided
+        if let Some(guide_sys) = guide_system {
+            self.guide_system = guide_sys.clone();
+        }
         
         let output = self.surface.get_current_texture()?;
         let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());

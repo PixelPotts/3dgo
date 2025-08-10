@@ -24,8 +24,8 @@ impl AxisIndicator {
             x_axis_mesh,
             y_axis_mesh,
             z_axis_mesh,
-            position: Vec3::new(-0.8, -0.7, 0.0), // Bottom-left of screen
-            scale: 0.1,
+            position: Vec3::new(-0.9, -0.8, 0.0), // Bottom-left of screen
+            scale: 0.2,  // Bigger scale for ~100px appearance
         }
     }
 
