@@ -6,6 +6,7 @@ use game::{GameRules, StoneColor};
 use render::{Graphics, Camera, CameraController, Instance};
 use input::MousePicker;
 use glam::Vec3;
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 use winit::{
     event::*,
