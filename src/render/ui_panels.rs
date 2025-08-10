@@ -74,7 +74,7 @@ impl UIPanels {
             },
             depth_stencil: None,
             multisample: wgpu::MultisampleState {
-                count: 4, // Match main render pass
+                count: 1, // Match main render pass
                 mask: !0,
                 alpha_to_coverage_enabled: false,
             },
