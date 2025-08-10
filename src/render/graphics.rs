@@ -190,6 +190,7 @@ impl Graphics {
             label: Some("camera_bind_group"),
         });
 
+        log::warn!("🔍 Creating DEPTH texture with sample_count=1");
         let depth_texture = device.create_texture(&wgpu::TextureDescriptor {
             label: Some("Depth Texture"),
             size: wgpu::Extent3d {
@@ -204,9 +205,11 @@ impl Graphics {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING,
             view_formats: &[],
         });
+        log::warn!("✅ DEPTH texture created successfully");
 
         let depth_view = depth_texture.create_view(&wgpu::TextureViewDescriptor::default());
 
+        log::warn!("🔍 Creating MULTISAMPLED framebuffer with sample_count=1");
         let multisampled_framebuffer = device.create_texture(&wgpu::TextureDescriptor {
             label: Some("Multisampled Framebuffer"),
             size: wgpu::Extent3d {
@@ -221,6 +224,7 @@ impl Graphics {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
             view_formats: &[],
         });
+        log::warn!("✅ MULTISAMPLED framebuffer created successfully");
 
         let multisampled_view = multisampled_framebuffer.create_view(&wgpu::TextureViewDescriptor::default());
 
@@ -499,6 +503,7 @@ impl Graphics {
         });
 
         {
+            log::warn!("🔥 STARTING MAIN RENDER PASS - surface sample_count should be 1");
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
@@ -527,6 +532,7 @@ impl Graphics {
             render_pass.set_bind_group(0, &self.camera_bind_group, &[]);
 
             // Render transparent boundary box
+            log::warn!("🔥 Setting TRANSPARENT SHADER pipeline (sample_count=1)");
             render_pass.set_pipeline(&self.transparent_shader.render_pipeline);
             render_pass.set_vertex_buffer(0, self.transparent_box_mesh.0.slice(..));
             render_pass.set_vertex_buffer(1, box_buffer.slice(..));
@@ -553,6 +559,7 @@ impl Graphics {
             render_pass.draw_indexed(0..self.guide_plane_xy_mesh.2, 0, 0..1 as _);
 
             if let Some(ref buffer) = black_stone_buffer {
+                log::warn!("🔥 Setting BLACK SPHERE SHADER pipeline (sample_count=1)");
                 render_pass.set_pipeline(&self.sphere_shader.render_pipeline);
                 render_pass.set_vertex_buffer(0, self.black_sphere_mesh.0.slice(..));
                 render_pass.set_vertex_buffer(1, buffer.slice(..));
@@ -561,6 +568,7 @@ impl Graphics {
             }
 
             if let Some(ref buffer) = white_stone_buffer {
+                log::warn!("🔥 Setting WHITE SPHERE SHADER pipeline (sample_count=1)");
                 render_pass.set_pipeline(&self.sphere_shader.render_pipeline);
                 render_pass.set_vertex_buffer(0, self.white_sphere_mesh.0.slice(..));
                 render_pass.set_vertex_buffer(1, buffer.slice(..));

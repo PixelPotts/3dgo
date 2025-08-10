@@ -99,10 +99,12 @@ pub mod minimal;
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
 pub async fn run() {
-    // AGGRESSIVE DEBUG MODE - Restore complex renderer
-    log::warn!("🔥 STARTING AGGRESSIVE DEBUG MODE 🔥");
+    // Use minimal renderer for debugging
+    minimal::run_minimal().await;
+    return;
     
-    // Original complex renderer (UN-COMMENTED FOR DEBUGGING)
+    // Original complex renderer (commented out for debugging)
+    /*
     cfg_if::cfg_if! {
         if #[cfg(target_arch = "wasm32")] {
             std::panic::set_hook(Box::new(console_error_panic_hook::hook));
@@ -309,4 +311,5 @@ pub async fn run() {
             _ => {}
         }
     });
+    */
 }

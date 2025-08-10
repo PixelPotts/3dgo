@@ -10,6 +10,7 @@ impl Shader {
         vertex_buffer_layouts: &[wgpu::VertexBufferLayout],
         topology: wgpu::PrimitiveTopology,
     ) -> Self {
+        log::warn!("🔍 Creating BASIC SHADER pipeline");
         let shader_source = include_str!("shaders/basic.wgsl");
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Basic Shader"),
@@ -22,6 +23,7 @@ impl Shader {
             push_constant_ranges: &[],
         });
 
+        log::warn!("🔍 About to create BASIC render pipeline with sample_count=1");
         let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("Render Pipeline"),
             layout: Some(&render_pipeline_layout),
@@ -62,6 +64,7 @@ impl Shader {
             },
             multiview: None,
         });
+        log::warn!("✅ BASIC render pipeline created successfully with sample_count=1");
 
         Self { render_pipeline }
     }
@@ -73,6 +76,7 @@ impl Shader {
         vertex_buffer_layouts: &[wgpu::VertexBufferLayout],
         topology: wgpu::PrimitiveTopology,
     ) -> Self {
+        log::warn!("🔍 Creating TRANSPARENT SHADER pipeline");
         let shader_source = include_str!("shaders/transparent.wgsl");
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Transparent Shader"),
@@ -85,6 +89,7 @@ impl Shader {
             push_constant_ranges: &[],
         });
 
+        log::warn!("🔍 About to create TRANSPARENT render pipeline with sample_count=1");
         let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("Transparent Pipeline"),
             layout: Some(&render_pipeline_layout),
@@ -136,6 +141,7 @@ impl Shader {
             },
             multiview: None,
         });
+        log::warn!("✅ TRANSPARENT render pipeline created successfully with sample_count=1");
 
         Self { render_pipeline }
     }
