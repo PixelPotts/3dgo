@@ -502,8 +502,8 @@ impl Graphics {
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                    view: &self.multisampled_view,
-                    resolve_target: Some(&view),
+                    view: &view,
+                    resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color {
                             r: 0.0,  // Black background
@@ -657,8 +657,8 @@ impl Graphics {
             let mut ui_render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("UI Panel Content Render Pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                    view: &self.multisampled_view,
-                    resolve_target: Some(view),
+                    view: view,
+                    resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Load,
                         store: true,
@@ -726,8 +726,8 @@ impl Graphics {
             let mut ui_render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("UI Panel Border Render Pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                    view: &self.multisampled_view,
-                    resolve_target: Some(view),
+                    view: view,
+                    resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Load,
                         store: true,
@@ -797,8 +797,8 @@ impl Graphics {
             let mut panel_render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Panel Render Pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                    view: &self.multisampled_view,
-                    resolve_target: Some(view),
+                    view: view,
+                    resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Load,
                         store: true,
@@ -907,8 +907,8 @@ impl Graphics {
         let mut rect_render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: Some("Rectangle Render Pass"),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                view: &self.multisampled_view,
-                resolve_target: Some(view),
+                view: view,
+                resolve_target: None,
                 ops: wgpu::Operations {
                     load: wgpu::LoadOp::Load,
                     store: true,
@@ -954,8 +954,8 @@ impl Graphics {
         let mut text_render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: Some("Text Render Pass"),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                view: &self.multisampled_view, // Use multisampled view
-                resolve_target: Some(view), // Resolve to final view
+                view: view, // Use multisampled view
+                resolve_target: None, // Resolve to final view
                 ops: wgpu::Operations {
                     load: wgpu::LoadOp::Load,
                     store: true,
